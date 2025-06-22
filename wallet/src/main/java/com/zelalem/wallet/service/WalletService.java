@@ -89,7 +89,6 @@ public class WalletService {
                     wallet.setCurrentBalance(currentBalance);
                     walletRepository.save(wallet);
 
-//                    Todo: Async Call of the Notification Service
                     return ResponseTemplate.builder().code(HttpStatus.OK.value()).message("Success!").data(wallet).build();
                 }
                 else {
@@ -117,7 +116,6 @@ public class WalletService {
                 wallet.setCurrentBalance(currentBalance);
                 walletRepository.save(wallet);
 
-//              Todo: Async Call of the Notification Service
                 return ResponseTemplate.builder().code(HttpStatus.OK.value()).message("Success!").data(wallet).build();
             }
             else {

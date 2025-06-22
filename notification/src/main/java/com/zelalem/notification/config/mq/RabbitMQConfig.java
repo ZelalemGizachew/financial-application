@@ -1,4 +1,4 @@
-package com.zelalem.transaction.config.mq.mq;
+package com.zelalem.notification.config.mq;
 
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;

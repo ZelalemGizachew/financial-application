@@ -25,6 +25,7 @@ public class TransactionHelperService {
     private final TransactionHistoryRepository transactionHistoryRepository;
 
     private final Gateway gateway;
+    private final NotificationService  notificationService;
 
     @Transactional
     public ResponseTemplate<TransactionHistory> deposit(DepositRequestDto depositRequestDto) {
@@ -43,6 +44,8 @@ public class TransactionHelperService {
                             .status(response.getCode().equals(HttpStatus.OK.value()) ? TRANSACTION_STATUS.SUCCESS :  TRANSACTION_STATUS.FAILED)
                             .build()
             );
+
+            notificationService.sendNotification(transactionHistory); // Async
 
             logger.info(transactionHistory.toString());
             return ResponseTemplate.<TransactionHistory>builder().code(response.getCode()).message(response.getMessage()).data(transactionHistory).build();
@@ -70,6 +73,8 @@ public class TransactionHelperService {
                             .status(response.getCode().equals(HttpStatus.OK.value()) ? TRANSACTION_STATUS.SUCCESS :  TRANSACTION_STATUS.FAILED)
                             .build()
             );
+
+            notificationService.sendNotification(transactionHistory); // Async
 
             logger.info(transactionHistory.toString());
             return ResponseTemplate.<TransactionHistory>builder().code(response.getCode()).message(response.getMessage()).data(transactionHistory).build();
