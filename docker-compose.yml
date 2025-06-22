@@ -37,7 +37,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - transaction_postgres_data:/var/lib/postgresql/data
     networks:
@@ -51,7 +51,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
     ports:
-      - "5433:5432"
+      - "5435:5432"
     volumes:
       - notification_postgres_data:/var/lib/postgresql/data
     networks:
@@ -93,7 +93,7 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      postgres:
+      user-postgres:
         condition: service_started
       rabbitmq:
         condition: service_started
@@ -109,7 +109,7 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      postgres:
+      wallet-postgres:
         condition: service_started
       rabbitmq:
         condition: service_started
@@ -125,7 +125,7 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      postgres:
+      transaction-postgres:
         condition: service_started
       rabbitmq:
         condition: service_started
@@ -141,7 +141,7 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-      postgres:
+      notification-postgres:
         condition: service_started
       rabbitmq:
         condition: service_started
