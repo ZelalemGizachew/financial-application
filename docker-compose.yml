@@ -1,0 +1,159 @@
+version: '3.9'
+
+services:
+  user-postgres:
+    image: postgres:15
+    container_name: user-postgres
+    environment:
+      POSTGRES_DB: user
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  wallet-postgres:
+    image: postgres:15
+    container_name: wallet-postgres
+    environment:
+      POSTGRES_DB: wallet
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5433:5432"
+    volumes:
+      - wallet_postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  transaction-postgres:
+    image: postgres:15
+    container_name: transaction-postgres
+    environment:
+      POSTGRES_DB: transaction
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5433:5432"
+    volumes:
+      - transaction_postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  notification-postgres:
+    image: postgres:15
+    container_name: notification-postgres
+    environment:
+      POSTGRES_DB: notification
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5433:5432"
+    volumes:
+      - notification_postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: dev-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend
+
+  config-server:
+    build:
+      context: ./config-server
+    container_name: config-server
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+    healthcheck:
+      test: curl -f http://localhost:8000/actuator/health || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-service:
+    build:
+      context: ./user
+    container_name: user-service
+    ports:
+      - "8001:8001"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    networks:
+      - backend
+
+  wallet-service:
+    build:
+      context: ./wallet
+    container_name: wallet-service
+    ports:
+      - "8002:8002"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    networks:
+      - backend
+
+  transaction-service:
+    build:
+      context: ./transaction
+    container_name: transaction-service
+    ports:
+      - "8003:8003"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    networks:
+      - backend
+
+  notification-service:
+    build:
+      context: ./notification
+    container_name: notification-service
+    ports:
+      - "8004:8004"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    networks:
+      - backend
+
+volumes:
+  user_postgres_data:
+  wallet_postgres_data:
+  transaction_postgres_data:
+  notification_postgres_data:
+
+networks:
+  backend:
+    driver: bridge
