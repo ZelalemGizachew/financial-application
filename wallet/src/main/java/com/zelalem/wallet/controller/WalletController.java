@@ -1,9 +1,17 @@
 package com.zelalem.wallet.controller;
 
+import com.zelalem.wallet.dto.request.BalanceUpdateRequestDto;
 import com.zelalem.wallet.dto.request.CreateWalletRequestDto;
 import com.zelalem.wallet.service.WalletService;
 import com.zelalem.wallet.utils.ResponseTemplate;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -28,18 +36,41 @@ public class WalletController {
     should handle concurrency and atomicity for balance updates.
 */
 
+//    @Hidden // Todo: Internal Use Only - Hide from Swagger on prod
     @PostMapping("/")
+    @Operation(summary = "Create Wallet", tags = "Wallet", description = "Create new wallet")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Success!", content = @Content(schema = @Schema(implementation = ResponseTemplate.class)))})
     public ResponseTemplate<?> createNewWallet(@RequestBody CreateWalletRequestDto createWalletRequestDto) {
         return walletService.createNewWallet(createWalletRequestDto);
     }
 
     @GetMapping("/{walletId}")
+    @Operation(summary = "Get Wallet", tags = "Wallet", description = "Get new wallet by walletId")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Success!", content = @Content(schema = @Schema(implementation = ResponseTemplate.class)))})
     public ResponseTemplate<?> getWalletByWalletId(@PathVariable("walletId") UUID walletId) {
         return walletService.getWalletByWalletId(walletId);
     }
 
     @GetMapping("/user/{userId}")
+    @Operation(summary = "Get Wallet", tags = "Wallet", description = "Get new wallet by userId")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Success!", content = @Content(schema = @Schema(implementation = ResponseTemplate.class)))})
     public ResponseTemplate<?> getWalletByUserId(@PathVariable("userId") String userId) {
         return walletService.getWalletByUserId(userId);
+    }
+
+//    @Hidden // Todo: Internal Use Only - Hide from Swagger on prod
+    @PutMapping("/{walletId}/debit") // ሲወጣ
+    @Operation(summary = "Perform Debit", tags = "Wallet", description = "Perform debit operation")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Success!", content = @Content(schema = @Schema(implementation = ResponseTemplate.class)))})
+    public ResponseTemplate<?> debit(@PathVariable("walletId") UUID walletId, @Validated @RequestBody BalanceUpdateRequestDto balanceUpdateRequestDto) {
+        return walletService.debit(walletId, balanceUpdateRequestDto);
+    }
+
+//    @Hidden // Todo: Internal Use Only - Hide from Swagger on prod
+    @PutMapping("/{walletId}/credit") // ሲገባ
+    @Operation(summary = "Ask for Credit", tags = "Wallet", description = "Perform credit operation")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Success!", content = @Content(schema = @Schema(implementation = ResponseTemplate.class)))})
+    public ResponseTemplate<?> credit(@PathVariable("walletId") UUID walletId, @Validated @RequestBody BalanceUpdateRequestDto balanceUpdateRequestDto) {
+        return walletService.credit(walletId, balanceUpdateRequestDto);
     }
 }

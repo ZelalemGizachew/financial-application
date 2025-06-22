@@ -1,10 +1,7 @@
 package com.zelalem.user.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,16 +9,17 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tbl_user")
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", unique = true, nullable = false)
-    private String username;
+    @Column(name = "user_id", unique = true, nullable = false)
+    private String userId;
 
     @CreationTimestamp
     @Column(name = "created_at")

@@ -28,17 +28,17 @@ public class Wallet {
     @Column(name = "current_balance")
     private Double currentBalance;
 
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     public Double getCurrentBalance() {
         if (currentBalance == null) return 0.00;
         return BigDecimal.valueOf(currentBalance).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @PrePersist
     public void prePersist() {
-        currentBalance = 0.0;
+        currentBalance = getCurrentBalance();
     }
 }
